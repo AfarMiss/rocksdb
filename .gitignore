@@ -29,7 +29,10 @@ rocksdb.pc
 .watchmanconfig
 CMakeCache.txt
 CMakeFiles/
-build/
+!build
+build/*
+!build/CMakeCache.txt
+# Build Directories
 
 ldb
 manifest_dump
