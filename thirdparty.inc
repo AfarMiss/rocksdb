@@ -91,10 +91,10 @@ endif ()
 #
 # Edit these 4 lines to define paths to LZ4
 #
-set(LZ4_HOME $ENV{THIRDPARTY_HOME}/LZ4.Library)
-set(LZ4_INCLUDE ${LZ4_HOME}/build/native/inc/inc)
-set(LZ4_LIB_DEBUG ${LZ4_HOME}/lib/native/debug/amd64/lz4.lib)
-set(LZ4_LIB_RELEASE ${LZ4_HOME}/lib/native/retail/amd64/lz4.lib)
+set(LZ4_HOME D:/TJ-Source/3rdParty/Source/lz4)
+set(LZ4_INCLUDE D:/TJ-Source/3rdParty/Source/lz4/lib)
+set(LZ4_LIB_DEBUG D:/TJ-Source/3rdParty/Source/lz4/build/VS2017/bin/Win32_Release/lz4.lib)
+set(LZ4_LIB_RELEASE D:/TJ-Source/3rdParty/Source/lz4/build/VS2017/bin/Win32_Release/lz4.lib)
 
 
 # For compatibility

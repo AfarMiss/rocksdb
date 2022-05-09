@@ -644,12 +644,14 @@ IOStatus WinFileSystem::GetChildren(const std::string& dir,
   std::string pattern(dir);
   pattern.append("\\").append("*");
 
-  HANDLE handle =
-      RX_FindFirstFileEx(RX_FN(pattern).c_str(),
-                         // Do not want alternative name
-                         FindExInfoBasic, &data, FindExSearchNameMatch,
-                         NULL,  // lpSearchFilter
-                         0);
+  HANDLE handle = ::FindFirstFile(RX_FN(pattern).c_str(), &data);
+      
+  //HANDLE handle =
+  //    RX_FindFirstFileEx(RX_FN(pattern).c_str(),
+  //                       // Do not want alternative name
+  //                       FindExInfoBasic, &data, FindExSearchNameMatch,
+  //                       NULL,  // lpSearchFilter
+  //                       0);
 
   if (handle == INVALID_HANDLE_VALUE) {
     auto lastError = GetLastError();
@@ -916,9 +918,8 @@ IOStatus WinFileSystem::AreFilesSame(const std::string& first,
   }
   UniqueCloseHandlePtr g_2(file_2, CloseHandleFunc);
 
-  FILE_ID_INFO FileInfo_1;
-  BOOL result = GetFileInformationByHandleEx(file_1, FileIdInfo, &FileInfo_1,
-                                             sizeof(FileInfo_1));
+  BY_HANDLE_FILE_INFORMATION FileInfo_1;
+  BOOL result = GetFileInformationByHandle(file_2, &FileInfo_1);
 
   if (!result) {
     auto lastError = GetLastError();
@@ -926,9 +927,8 @@ IOStatus WinFileSystem::AreFilesSame(const std::string& first,
     return s;
   }
 
-  FILE_ID_INFO FileInfo_2;
-  result = GetFileInformationByHandleEx(file_2, FileIdInfo, &FileInfo_2,
-                                        sizeof(FileInfo_2));
+  BY_HANDLE_FILE_INFORMATION FileInfo_2;
+  result = GetFileInformationByHandle(file_2, &FileInfo_2);
 
   if (!result) {
     auto lastError = GetLastError();
@@ -936,13 +936,19 @@ IOStatus WinFileSystem::AreFilesSame(const std::string& first,
     return s;
   }
 
-  if (FileInfo_1.VolumeSerialNumber == FileInfo_2.VolumeSerialNumber) {
-    *res =
-        (0 == memcmp(FileInfo_1.FileId.Identifier, FileInfo_2.FileId.Identifier,
-                     sizeof(FileInfo_1.FileId.Identifier)));
+  if (FileInfo_1.dwVolumeSerialNumber == FileInfo_2.dwVolumeSerialNumber) {
+    *res = ((FileInfo_1.nFileIndexLow == FileInfo_2.nFileIndexLow) &&
+            (FileInfo_1.nFileIndexHigh == FileInfo_2.nFileIndexHigh));
   } else {
     *res = false;
   }
+  //if (FileInfo_1.VolumeSerialNumber == FileInfo_2.VolumeSerialNumber) {
+  //  *res =
+  //      (0 == memcmp(FileInfo_1.FileId.Identifier, FileInfo_2.FileId.Identifier,
+  //                   sizeof(FileInfo_1.FileId.Identifier)));
+  //} else {
+  //  *res = false;
+  //}
 #endif
   return s;
 }
